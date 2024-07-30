@@ -1,0 +1,94 @@
+import React from "react";
+import Fish from "./components/Fish";
+import { useState } from "react";
+
+const App = () => {
+  const [todoName, settodoName] = useState("");
+  const [todoCategory, settodoCategory] = useState("");
+  const [todoTime, settodoTime] = useState("");
+  const [allTodo, setallTodo] = useState([]);
+  const [button, setbutton] = useState("Add Todo");
+  const [currentIndex, setcurrentIndex] = useState(0);
+  const [isediting, setisediting] = useState(false);
+
+  const clearInput = () => {
+    settodoName("");
+    settodoCategory("");
+    settodoTime("");
+  };
+
+  const addTodo = () => {
+    if (isediting == true) {
+      updateDetails();
+    } else {
+      let todo = { todoName, todoCategory, todoTime };
+      setallTodo([...allTodo, todo]);
+    }
+  };
+
+  const deleteTodo = (index) => {
+    let newTodo = [...allTodo];
+    newTodo.splice(index, 1);
+    setallTodo(newTodo);
+  };
+
+  const editTodo = (index) => {
+    setisediting(true);
+    setbutton("edit Todo");
+    setcurrentIndex(index);
+    settodoName(allTodo[index].todoName);
+    settodoCategory(allTodo[index].todoCategory);
+    settodoTime(allTodo[index].todoTime);
+  };
+
+  const updateDetails = () => {
+    let newTodo = [...allTodo];
+    newTodo.splice(currentIndex, 1, {
+      todoName,
+      todoTime,
+      todoCategory,
+    });
+    setallTodo(newTodo);
+    setisediting(false);
+    setbutton("Add Todo");
+    clearInput();
+  };
+
+  return (
+    <>
+      <input
+        type="text"
+        placeholder="Todo Name"
+        value={todoName}
+        onChange={(e) => settodoName(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Todo Category"
+        value={todoCategory}
+        onChange={(e) => settodoCategory(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Todo Time"
+        value={todoTime}
+        onChange={(e) => settodoTime(e.target.value)}
+      />
+
+      <button onClick={addTodo}>{button}</button>
+      <hr />
+      <h1>All Todo</h1>
+
+      {allTodo.map((todo, index) => (
+        <div key={index}>
+          <h1>{todo.todoName}</h1>
+          <button onClick={() => deleteTodo(index)}>Delete</button>
+
+          <button onClick={() => editTodo(index)}>edit</button>
+        </div>
+      ))}
+    </>
+  );
+};
+
+export default App;
