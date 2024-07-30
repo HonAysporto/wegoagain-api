@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import axios from "axios";
 import { useState } from "react";
 import './styles.css';
@@ -10,6 +10,7 @@ const Effect = () => {
 
   const [data, setdata] = useState([]);
   const [isLoading, setisLoading] = useState(true);
+  const audioRefs = useRef([]);
 
   useEffect(() => {
     fetchData();
@@ -23,14 +24,23 @@ const Effect = () => {
     });
   };
 
+    const handlePlay = (index) => {
+    // Pause all audio elements except the one being played
+    audioRefs.current.forEach((audio, idx) => {
+      if (idx !== index && audio) {
+        audio.pause();
+      }
+    });
+  };
+
   return (
     <>
       <div className="main-container">
-      <h1>Honourable Plays</h1>
+      <h1>Honourable Play</h1>
       {isLoading ? (
         <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading..." />
       ) : (
-        data.map((user) => (
+        data.map((user, index) => (
           <div className="song-item" key={user.id}>
             <img
               className="song-image"
@@ -39,7 +49,13 @@ const Effect = () => {
             />
             <h1>Song Title: {user.songTitle}</h1>
             <strong>Release date: {user.releaseDate}</strong>
-            <audio src={user.songUrl} controls ></audio>
+            <audio
+              ref={(el) => (audioRefs.current[index] = el)}
+              src={user.songUrl}
+              controls
+              onPlay={() => handlePlay(index)}
+            ></audio>
+            <a href={user.songUrl} download={user.songTitle}>Download</a>
           </div>
         ))
       )}
